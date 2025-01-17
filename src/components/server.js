@@ -8,11 +8,11 @@ export const login = async (username, password) => {
         });
 
         if (response.ok) {
-        const role = currentRole()
+        const role = currentRole();
             return {
                 status: response.status,
                 message: response.statusText,
-                role: role
+                role: role.role
             };
         } else {
             return {
@@ -43,7 +43,7 @@ export const currentRole = async () => {
             return {
                 status: response.status,
                 message: response.statusText,
-                data,
+                role: data.role,
             };
         } else {
             return {

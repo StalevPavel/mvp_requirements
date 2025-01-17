@@ -8,7 +8,8 @@ import Projects from './components/Projects/Projects';
 import Project from "./Project/Project";
 import Requirement from './components/Requirement/Requirement';
 import Requirements from './components/Requirements/Requirements';
-import { login, project, deleteProject, submitProjects, editProjects, archiveProjects, requirement, editRequirements, requirementInfo, requirements} from './components/server';
+import { login, project, deleteProject, submitProjects, editProjects, archiveProjects, requirement, editRequirements, requirementInfo, requirements } from './components/server';
+import { AdminPanel } from "./components/AdminPanel/AdminPanel";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -23,7 +24,7 @@ const App = () => {
   const handleButtonClick = (text, button) => {
     setHeaderText(text);
     setActiveButton(button);
-  
+
     // Если нажата кнопка "Требования", вызываем `handleRequirements`
     if (button === 'requirements') {
       handleRequirements();
@@ -32,95 +33,107 @@ const App = () => {
 
   const handleAddRequirement = () => {
     setActiveButton('addRequirement');
-};
+  };
 
   const handleLogin = async (username, password) => {
     try {
-        const result = await login(username, password);
+      const result = await login(username, password);
 
-        if (result.status === 200) {
-          setIsAuthenticated(true);
-          if (result.role == 'ROLE_ADMIN') {
-            setIsAdmin(true);
-          }
-          setActiveButton('projects');
-          handleProjects();
-        } else {
-          alert(result.message || result.statusText || 'Ошибка авторизации');
+      if (result.status === 200) {
+        setIsAuthenticated(true);
+        if (result.role == 'ROLE_ADMIN') {
+          setIsAdmin(true);
         }
+        setActiveButton('projects');
+        handleProjects();
+      } else {
+        alert(result.message || result.statusText || 'Ошибка авторизации');
+      }
     } catch (err) {
-        alert(err.message || 'Неизвестная ошибка');
+      alert(err.message || 'Неизвестная ошибка');
     }
   };
 
-    const handleProjects = async () => {
-      try {
-          const result = await project();
-  
-          if (result.status === 200) {
-            setProjectsList(result.data);
-          } else {
-              alert(result.message || result.statusText || 'Ошибка получения списка проектов');
-          }
-      } catch (err) {
-          alert(err.message || 'Неизвестная ошибка');
+  const handleProjects = async () => {
+    try {
+      const result = await project();
+
+      if (result.status === 200) {
+        setProjectsList(result.data);
+      } else {
+        alert(result.message || result.statusText || 'Ошибка получения списка проектов');
       }
-    };
-    const handleRequirements = async () => {
-      try {
-          const result = await requirements(); // Вызов импортированной функции
-          if (result.status === 200) {
-              setRequirementsList(result.data); // Обновляем состояние
-          } else {
-              alert(result.message || result.statusText || 'Ошибка получения списка требований');
-          }
-      } catch (err) {
-          alert(err.message || 'Неизвестная ошибка');
+    } catch (err) {
+      alert(err.message || 'Неизвестная ошибка');
+    }
+  };
+  const handleRequirements = async () => {
+    try {
+      const result = await requirements(); // Вызов импортированной функции
+      if (result.status === 200) {
+        setRequirementsList(result.data); // Обновляем состояние
+      } else {
+        alert(result.message || result.statusText || 'Ошибка получения списка требований');
       }
+    } catch (err) {
+      alert(err.message || 'Неизвестная ошибка');
+    }
   };
 
+
+
   return (
-    !isAdmin ?
     <div>
       <Header text={headerText} />
+
       <Menu isAuthenticated={isAuthenticated} onButtonClick={handleButtonClick} activeButton={activeButton} />
-      {!isAuthenticated && <MainContent/>}
-      {!isAuthenticated && <Login onLogin={handleLogin}/>}
-      {activeButton === 'projects' && projectsList !=null && (
-        <Projects projectList = {projectsList}
-        handleProjects = {handleProjects}
-        deleteProject = {deleteProject}
-        setProjectsList = {setProjectsList}
-        handleButtonClick = {handleButtonClick}
-        setProjectInfo = {setProjectInfo}/>)}
-      {activeButton === 'addProjects' && <AddProject submitProject={submitProjects} handleButtonClick = {handleButtonClick}/>}
+
+      {!isAuthenticated && <MainContent />}
+
+      {!isAuthenticated && <Login onLogin={handleLogin} />}
+
+      {activeButton === 'projects' && projectsList != null && (
+        <Projects projectList={projectsList}
+          handleProjects={handleProjects}
+          deleteProject={deleteProject}
+          setProjectsList={setProjectsList}
+          handleButtonClick={handleButtonClick}
+          setProjectInfo={setProjectInfo} />)}
+
+      {activeButton === 'addProjects' && <AddProject submitProject={submitProjects} handleButtonClick={handleButtonClick} />}
+
       {activeButton === 'project' && (
         <Project
-        projectInfo={projectInfo}
-        editProjects = {editProjects}
-        archiveProjects= {archiveProjects}
-        handleButtonClick = {handleButtonClick}
-        requirementAPI = {requirement}
-        setRequirementInfo= {setRequirementInfo}/>)}
-        {activeButton === 'requirements' && requirementsList != null && (
+          projectInfo={projectInfo}
+          editProjects={editProjects}
+          archiveProjects={archiveProjects}
+          handleButtonClick={handleButtonClick}
+          requirementAPI={requirement}
+          setRequirementInfo={setRequirementInfo} />)}
+
+      {activeButton === 'requirements' && requirementsList != null && (
         <Requirements
-        requirementsList={requirementsList}
-        handleRequirements={handleRequirements}
-        handleButtonClick={handleButtonClick}
-        setRequirementsList={setRequirementsList}
-        setRequirementInfo={setRequirementInfo} // Передача функции для установки информации о требовании
-      />
+          requirementsList={requirementsList}
+          handleRequirements={handleRequirements}
+          handleButtonClick={handleButtonClick}
+          setRequirementsList={setRequirementsList}
+          setRequirementInfo={setRequirementInfo} // Передача функции для установки информации о требовании
+        />
       )}
-        {activeButton === 'requirement' && (
-          <Requirement
-          requirementInfo = {requirementInfo}
-          handleProjects = {project}
-          editRequirement = {editRequirements}
-          updateRequirement = {requirementInfo}
-          archiveRequirement = {() => {}}
-          handleButtonClick = {handleButtonClick}
-          setRequirementInfo = {setRequirementInfo} />)}
-    </div> : <div></div>
+
+      {activeButton === 'requirement' && (
+        <Requirement
+          requirementInfo={requirementInfo}
+          handleProjects={project}
+          editRequirement={editRequirements}
+          updateRequirement={requirementInfo}
+          archiveRequirement={() => { }}
+          handleButtonClick={handleButtonClick}
+          setRequirementInfo={setRequirementInfo} />)}
+
+      {isAdmin && <AdminPanel/>}    
+      
+    </div>
   );
 };
 
