@@ -26,14 +26,6 @@ const Menu = ({ isAuthenticated , onButtonClick, activeButton}) => {
                 Требования
             </button>
             <button
-                className={`menu-button ${activeButton === 'addProject' ? 'active' : ''}`}
-                onClick={() => onButtonClick('Добавить проект', 'addProject')}
-        
-                disabled={!isAuthenticated}
-            >
-                Добавить проект
-            </button>
-            <button
                 className={`menu-button ${activeButton === 'settings' ? 'active' : ''}`}
                 onClick={() => onButtonClick('Настройки', 'settings')}
                 disabled={!isAuthenticated}

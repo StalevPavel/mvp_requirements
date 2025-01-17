@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import './AddProject.css';
 
-const AddProject = () => {
+const AddProject = ({submitProject, handleButtonClick}) => {
     const [projectName, setProjectName] = useState('');
     const [developer, setDeveloper] = useState('');
     const [description, setDescription] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [errors, setErrors] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
 
     const validateForm = () => {
         const newErrors = {};
@@ -34,18 +35,17 @@ const AddProject = () => {
         );
     };
 
-
     const handleSubmit = (e) => {
         e.preventDefault();
         if (validateForm()) {
-            console.log({
-                projectName,
+            const project = {
+                name: projectName,
                 developer,
                 description,
-                startDate,
-                endDate,
-            });
-
+                startDateTime: `${startDate}T00:00:00`,
+                endDateTime: `${endDate}T23:59:59`,
+            };
+            submitProject(project, setIsLoading, handleButtonClick);
             setProjectName('');
             setDeveloper('');
             setDescription('');
@@ -66,6 +66,7 @@ const AddProject = () => {
                     type="text"
                     value={projectName}
                     onChange={(e) => setProjectName(e.target.value)}
+                    required
                 />
             </div>
             <div className="form-group">
@@ -75,6 +76,7 @@ const AddProject = () => {
                     type="text"
                     value={developer}
                     onChange={(e) => setDeveloper(e.target.value)}
+                    required
                 />
             </div>
             <div className="form-group">
@@ -93,6 +95,7 @@ const AddProject = () => {
                     type="date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
+                    required
                 />
             </div>
             <div className="form-group">
@@ -102,10 +105,15 @@ const AddProject = () => {
                     type="date"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
+                    required
                 />
             </div>
-            <button type="submit" className="add-project-button" disabled={!isFormValid()}>
-                Добавить проект
+            <button
+                type="submit"
+                className="add-project-button"
+                disabled={!isFormValid() || isLoading}
+            >
+                {isLoading ? 'Добавление...' : 'Добавить проект'}
             </button>
         </form>
     );
